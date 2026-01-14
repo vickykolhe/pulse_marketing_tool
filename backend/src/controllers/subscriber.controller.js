@@ -1,7 +1,5 @@
 export const getSubscribers = (req, res) => {
-  //   res.json({
-  //     message: "Subscribers endpoint working",
-  //   });
-
-  throw new Error("Test error");
+  res.json({
+    message: "Subscribers endpoint working",
+  });
 };
