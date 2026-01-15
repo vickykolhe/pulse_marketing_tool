@@ -6,6 +6,13 @@ export const createSubscriberService = async (data) => {
   return await Subscriber.create(data);
 };
 
+/* Bulk Create Subscribers */
+export const bulkCreateSubscribersService = async (subscribers) => {
+  return await Subscriber.bulkCreate(subscribers, {
+    ignoreDuplicates: true,
+  });
+};
+
 /* Get Subscribers with Pagination & Search */
 export const getSubscribersService = async ({ page, limit, search }) => {
   const offset = (page - 1) * limit;

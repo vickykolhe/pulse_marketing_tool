@@ -7,6 +7,7 @@
 import {
   createSubscriberService,
   getSubscribersService,
+  bulkCreateSubscribersService,
 } from "../services/subscriber.service.js";
 
 /* Create Subscriber */
@@ -14,6 +15,18 @@ export const createSubscriber = async (req, res, next) => {
   try {
     const subscriber = await createSubscriberService(req.body);
     res.status(201).json(subscriber);
+  } catch (error) {
+    next(error);
+  }
+};
+
+/* Bulk Create Subscribers */
+export const bulkCreateSubscribers = async (req, res, next) => {
+  try {
+    const result = await bulkCreateSubscribersService(req.body);
+    res.status(201).json({
+      inserted: result.length,
+    });
   } catch (error) {
     next(error);
   }
