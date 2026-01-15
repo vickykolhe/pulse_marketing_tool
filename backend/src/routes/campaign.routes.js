@@ -12,12 +12,15 @@ import {
   createCampaign,
   getCampaigns,
   sendCampaign,
+  updateCampaign,
+  getCampaignById,
 } from "../controllers/campaign.controller.js";
 
 const router = express.Router();
 
-router.post("/", createCampaign);
-router.post("/:id/send", sendCampaign);
 router.get("/", getCampaigns);
-
+router.post("/", createCampaign);
+router.get("/:id", getCampaignById);
+router.put("/:id", updateCampaign);
+router.post("/:id/send", sendCampaign);
 export default router;

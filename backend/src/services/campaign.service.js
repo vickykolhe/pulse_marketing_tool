@@ -52,6 +52,31 @@ export const sendCampaignService = async (campaignId) => {
   });
 };
 
+export const updateDraftCampaignService = async (id, data) => {
+  const campaign = await Campaign.findByPk(id);
+
+  if (!campaign) {
+    throw new Error("Campaign not found");
+  }
+
+  if (campaign.status === "sent") {
+    throw new Error("Sent campaigns cannot be edited");
+  }
+
+  await campaign.update({
+    title: data.title,
+    emailSubject: data.emailSubject,
+    content: data.content,
+  });
+
+  return campaign;
+};
+
+/* Get campaign by ID */
+export const getCampaignByIdService = async (id) => {
+  return await Campaign.findByPk(id);
+};
+
 /* Get All Campaigns */
 export const getCampaignsService = async () => {
   return await Campaign.findAll({

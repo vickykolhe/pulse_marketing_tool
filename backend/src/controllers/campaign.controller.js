@@ -8,6 +8,8 @@ import {
   createCampaignService,
   getCampaignsService,
   sendCampaignService,
+  updateDraftCampaignService,
+  getCampaignByIdService,
 } from "../services/campaign.service.js";
 
 /* Create Campaign */
@@ -31,6 +33,34 @@ export const sendCampaign = async (req, res, next) => {
       message: "Campaign sent successfully",
       analyticsGenerated: result.analyticsCount,
     });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const updateCampaign = async (req, res, next) => {
+  try {
+    const updatedCampaign = await updateDraftCampaignService(
+      req.params.id,
+      req.body
+    );
+
+    res.json(updatedCampaign);
+  } catch (error) {
+    next(error);
+  }
+};
+
+/* Get Campaign by ID */
+export const getCampaignById = async (req, res, next) => {
+  try {
+    const campaign = await getCampaignByIdService(req.params.id);
+
+    if (!campaign) {
+      return res.status(404).json({ error: "Campaign not found" });
+    }
+
+    res.json(campaign);
   } catch (error) {
     next(error);
   }

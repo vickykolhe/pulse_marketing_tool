@@ -1,10 +1,13 @@
 import { useEffect, useState } from "react";
 import api from "../api/axios";
+import { useNavigate } from "react-router-dom";
 
 const CampaignList = () => {
   const [campaigns, setCampaigns] = useState([]);
   const [loading, setLoading] = useState(true);
   const [sendingId, setSendingId] = useState(null);
+
+  const navigate = useNavigate();
 
   // Fetch all campaigns
   const fetchCampaigns = async () => {
@@ -69,16 +72,25 @@ const CampaignList = () => {
                 </td>
                 <td className="p-2 text-center">
                   {campaign.status === "draft" ? (
-                    <button
-                      onClick={() => sendCampaign(campaign.id)}
-                      disabled={sendingId === campaign.id}
-                      className="px-3 py-1 bg-blue-600 text-white rounded disabled:opacity-50"
-                    >
-                      {sendingId === campaign.id ? "Sending..." : "Send"}
-                    </button>
-                  ) : (
-                    <span className="text-green-600">Sent</span>
-                  )}
+  <div className="flex gap-2 justify-center">
+    <button
+      onClick={() => navigate(`/campaigns/edit/${campaign.id}`)}
+      className="px-3 py-1 bg-gray-600 text-white rounded"
+    >
+      Edit
+    </button>
+
+    <button
+      onClick={() => sendCampaign(campaign.id)}
+      disabled={sendingId === campaign.id}
+      className="px-3 py-1 bg-blue-600 text-white rounded disabled:opacity-50"
+    >
+      {sendingId === campaign.id ? "Sending..." : "Send"}
+    </button>
+  </div>
+) : (
+  <span className="text-green-600">Sent</span>
+)}
                 </td>
               </tr>
             ))}
