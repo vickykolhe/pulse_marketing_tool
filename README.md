@@ -31,7 +31,7 @@ It supports subscriber management, campaign creation and sending, and real-time 
 
 ## Dashboard Preview
 
-![Dashboard Demo](frontend/public/dashboard-demo.png)
+![Dashboard Demo](frontend/public/dashboard_preview.gif)
 
 ---
 
