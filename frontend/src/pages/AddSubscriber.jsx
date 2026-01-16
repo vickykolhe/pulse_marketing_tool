@@ -1,102 +1,50 @@
 // import { useState } from "react";
-// import api from "../api/axios";
+// import SingleSubscriberForm from "../components/SingleSubscriberForm";
+// import BulkSubscriberForm from "../components/BulkSubscriberForm";
 
 // const AddSubscriber = () => {
-//   // 1️⃣ Form state
-//   const [name, setName] = useState("");
-//   const [email, setEmail] = useState("");
-
-//   // 2️⃣ UI states
-//   const [loading, setLoading] = useState(false);
-//   const [error, setError] = useState("");
-//   const [success, setSuccess] = useState("");
-
-//   // 3️⃣ Validation function
-//   const validate = () => {
-//     if (!name.trim()) {
-//       setError("Name is required");
-//       return false;
-//     }
-
-//     if (!email.trim()) {
-//       setError("Email is required");
-//       return false;
-//     }
-
-//     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-//     if (!emailRegex.test(email)) {
-//       setError("Invalid email format");
-//       return false;
-//     }
-
-//     return true;
-//   };
-
-//   // 4️⃣ Submit handler
-//   const handleSubmit = async (e) => {
-//     e.preventDefault();
-//     setError("");
-//     setSuccess("");
-
-//     if (!validate()) return;
-
-//     try {
-//       setLoading(true);
-
-//       await api.post("/subscribers", {
-//         name,
-//         email,
-//       });
-
-//       setSuccess("Subscriber added successfully");
-//       setName("");
-//       setEmail("");
-//     } catch (err) {
-//       setError(err.response?.data?.error || "Something went wrong");
-//     } finally {
-//       setLoading(false);
-//     }
-//   };
+//   const [mode, setMode] = useState("single");
 
 //   return (
-//     <div className="max-w-md bg-white p-6 rounded shadow">
-//       <h1 className="text-xl font-semibold mb-4">Add Subscriber</h1>
+//     <div className="bg-white p-6 rounded shadow max-w-lg">
+//       <h1 className="text-xl font-semibold mb-4">Add Subscribers</h1>
 
-//       <form onSubmit={handleSubmit} className="space-y-4">
-//         {/* Name */}
-//         <input
-//           type="text"
-//           placeholder="Name"
-//           value={name}
-//           onChange={(e) => setName(e.target.value)}
-//           className="w-full border p-2 rounded"
-//         />
-
-//         {/* Email */}
-//         <input
-//           type="email"
-//           placeholder="Email"
-//           value={email}
-//           onChange={(e) => setEmail(e.target.value)}
-//           className="w-full border p-2 rounded"
-//         />
+//       {/* Toggle Buttons */}
+//       <div className="flex gap-2 mb-4">
+//         <button
+//           onClick={() => setMode("single")}
+//           className={`px-4 py-2 rounded ${
+//             mode === "single"
+//               ? "bg-blue-600 text-white"
+//               : "bg-gray-200"
+//           }`}
+//         >
+//           Single
+//         </button>
 
 //         <button
-//           disabled={loading}
-//           className="w-full bg-blue-600 text-white py-2 rounded disabled:opacity-50"
+//           onClick={() => setMode("bulk")}
+//           className={`px-4 py-2 rounded ${
+//             mode === "bulk"
+//               ? "bg-blue-600 text-white"
+//               : "bg-gray-200"
+//           }`}
 //         >
-//           {loading ? "Adding..." : "Add Subscriber"}
+//           Bulk
 //         </button>
-//       </form>
+//       </div>
 
-//       {error && <p className="text-red-500 mt-3">{error}</p>}
-//       {success && <p className="text-green-600 mt-3">{success}</p>}
+//       {/* Forms */}
+//       {mode === "single" ? (
+//         <SingleSubscriberForm />
+//       ) : (
+//         <BulkSubscriberForm />
+//       )}
 //     </div>
 //   );
 // };
 
 // export default AddSubscriber;
-
 
 import { useState } from "react";
 import SingleSubscriberForm from "../components/SingleSubscriberForm";
@@ -106,42 +54,58 @@ const AddSubscriber = () => {
   const [mode, setMode] = useState("single");
 
   return (
-    <div className="bg-white p-6 rounded shadow max-w-lg">
-      <h1 className="text-xl font-semibold mb-4">Add Subscribers</h1>
-
-      {/* Toggle Buttons */}
-      <div className="flex gap-2 mb-4">
-        <button
-          onClick={() => setMode("single")}
-          className={`px-4 py-2 rounded ${
-            mode === "single"
-              ? "bg-blue-600 text-white"
-              : "bg-gray-200"
-          }`}
-        >
-          Single
-        </button>
-
-        <button
-          onClick={() => setMode("bulk")}
-          className={`px-4 py-2 rounded ${
-            mode === "bulk"
-              ? "bg-blue-600 text-white"
-              : "bg-gray-200"
-          }`}
-        >
-          Bulk
-        </button>
+    <div className="max-w-xl space-y-6">
+      {/* Header */}
+      <div>
+        <h1 className="text-2xl font-semibold text-gray-900">
+          Add Subscribers
+        </h1>
+        <p className="text-sm text-gray-500 mt-1">
+          Add subscribers individually or upload in bulk
+        </p>
       </div>
 
-      {/* Forms */}
-      {mode === "single" ? (
-        <SingleSubscriberForm />
-      ) : (
-        <BulkSubscriberForm />
-      )}
+      {/* Card */}
+      <div className="rounded-xl border border-gray-200 bg-white p-6">
+        {/* Toggle */}
+        <div className="mb-6 inline-flex rounded-lg border border-gray-300 bg-white p-1">
+          <ToggleButton
+            active={mode === "single"}
+            onClick={() => setMode("single")}
+          >
+            Single
+          </ToggleButton>
+          <ToggleButton
+            active={mode === "bulk"}
+            onClick={() => setMode("bulk")}
+          >
+            Bulk
+          </ToggleButton>
+        </div>
+
+        {/* Forms */}
+        {mode === "single" ? (
+          <SingleSubscriberForm />
+        ) : (
+          <BulkSubscriberForm />
+        )}
+      </div>
     </div>
   );
 };
+
+const ToggleButton = ({ active, children, ...props }) => (
+  <button
+    {...props}
+    className={`px-4 py-2 text-sm font-medium rounded-md transition
+      ${
+        active
+          ? "bg-gray-200 text-gray-800 shadow-sm"
+          : "text-gray-600 hover:text-gray-900"
+      }`}
+  >
+    {children}
+  </button>
+);
 
 export default AddSubscriber;

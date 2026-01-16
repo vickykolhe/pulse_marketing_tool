@@ -66,11 +66,21 @@ export const getCampaignById = async (req, res, next) => {
   }
 };
 
-/* Get Campaigns */
 export const getCampaigns = async (req, res, next) => {
   try {
-    const campaigns = await getCampaignsService();
-    res.json(campaigns);
+    const { page = 1, limit = 10, status = "" } = req.query;
+
+    const result = await getCampaignsService({
+      page: Number(page),
+      limit: Number(limit),
+      status: status || null,
+    });
+
+    res.json({
+      total: result.count,
+      page: Number(page),
+      data: result.rows,
+    });
   } catch (error) {
     next(error);
   }

@@ -77,9 +77,23 @@ export const getCampaignByIdService = async (id) => {
   return await Campaign.findByPk(id);
 };
 
-/* Get All Campaigns */
-export const getCampaignsService = async () => {
-  return await Campaign.findAll({
+/* Get campaigns with pagination & filter */
+export const getCampaignsService = async ({ page, limit, status }) => {
+  const offset = (page - 1) * limit;
+
+  const whereClause = status ? { status } : {};
+
+  return await Campaign.findAndCountAll({
+    where: whereClause,
+    limit,
+    offset,
     order: [["createdAt", "DESC"]],
   });
 };
+
+// /* Get All Campaigns */
+// export const getCampaignsService = async () => {
+//   return await Campaign.findAll({
+//     order: [["createdAt", "DESC"]],
+//   });
+// };

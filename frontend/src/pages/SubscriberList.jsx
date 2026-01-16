@@ -5,31 +5,26 @@
 
 // const SubscriberList = () => {
 //   const [subscribers, setSubscribers] = useState([]);
-//   const [totalCount, setTotalCount] = useState(0);
+//   const [total, setTotal] = useState(0);
 //   const [page, setPage] = useState(1);
 //   const [search, setSearch] = useState("");
 //   const [loading, setLoading] = useState(false);
-//   const [error, setError] = useState("");
 
 //   const fetchSubscribers = async () => {
+//     setLoading(true);
 //     try {
-//       setLoading(true);
-//       setError("");
-
-//       const offset = (page - 1) * PAGE_LIMIT;
-
-//       const res = await api.get("/subscribers", {
-//         params: { page,
-//         limit: PAGE_LIMIT,
-//         search }
+//       const response = await api.get("/subscribers", {
+//         params: {
+//           page,
+//           limit: PAGE_LIMIT,
+//           search
+//         }
 //       });
 
-//       // SAFETY CHECK
-//       setSubscribers(res?.data?.rows || []);
-//       setTotalCount(res?.data?.count || 0);
-//     } catch (err) {
-//       console.error(err);
-//       setError("Failed to load subscribers");
+//       setSubscribers(response.data.data);
+//       setTotal(response.data.total);
+//     } catch (error) {
+//       console.error("Error fetching subscribers", error);
 //     } finally {
 //       setLoading(false);
 //     }
@@ -39,16 +34,13 @@
 //     fetchSubscribers();
 //   }, [page, search]);
 
-//   const totalPages = Math.max(1, Math.ceil(totalCount / PAGE_LIMIT));
+//   const totalPages = Math.ceil(total / PAGE_LIMIT);
 
 //   return (
-//     <div className="min-h-screen bg-gray-50 p-6 space-y-6">
+//     <div className="space-y-6">
+//       <h1 className="text-2xl font-semibold">Subscribers</h1>
 
-//       <h1 className="text-3xl font-bold text-gray-800">
-//         Subscribers
-//       </h1>
-
-//       {/* SEARCH */}
+//       {/* Search */}
 //       <input
 //         type="text"
 //         placeholder="Search by email..."
@@ -57,18 +49,16 @@
 //           setPage(1);
 //           setSearch(e.target.value);
 //         }}
-//         className="border px-3 py-2 rounded-md w-72 focus:ring-2 focus:ring-blue-500"
+//         className="border p-2 rounded w-64"
 //       />
 
-//       {/* CONTENT */}
-//       <div className="bg-white rounded-lg shadow overflow-hidden">
-//         {loading ? (
-//           <p className="p-6 text-gray-500">Loading subscribers...</p>
-//         ) : error ? (
-//           <p className="p-6 text-red-500">{error}</p>
-//         ) : (
-//           <table className="w-full">
-//             <thead className="bg-gray-100 text-gray-700">
+//       {/* Table */}
+//       {loading ? (
+//         <p>Loading subscribers...</p>
+//       ) : (
+//         <div className="bg-white shadow rounded">
+//           <table className="w-full border-collapse">
+//             <thead className="bg-gray-100">
 //               <tr>
 //                 <th className="p-3 text-left">Name</th>
 //                 <th className="p-3 text-left">Email</th>
@@ -78,41 +68,41 @@
 //             <tbody>
 //               {subscribers.length === 0 ? (
 //                 <tr>
-//                   <td colSpan="2" className="p-6 text-center text-gray-500">
+//                   <td colSpan="2" className="p-4 text-center text-gray-500">
 //                     No subscribers found
 //                   </td>
 //                 </tr>
 //               ) : (
-//                 subscribers.map((s) => (
-//                   <tr key={s.id} className="border-t hover:bg-gray-50">
-//                     <td className="p-3">{s.name}</td>
-//                     <td className="p-3">{s.email}</td>
+//                 subscribers.map((subscriber) => (
+//                   <tr key={subscriber.id} className="border-t">
+//                     <td className="p-3">{subscriber.name}</td>
+//                     <td className="p-3">{subscriber.email}</td>
 //                   </tr>
 //                 ))
 //               )}
 //             </tbody>
 //           </table>
-//         )}
-//       </div>
+//         </div>
+//       )}
 
-//       {/* PAGINATION */}
+//       {/* Pagination */}
 //       <div className="flex items-center gap-4">
 //         <button
 //           disabled={page === 1}
-//           onClick={() => setPage((p) => p - 1)}
-//           className="px-4 py-2 border rounded disabled:opacity-50"
+//           onClick={() => setPage(page - 1)}
+//           className="px-3 py-1 border rounded disabled:opacity-50"
 //         >
 //           Previous
 //         </button>
 
-//         <span className="text-gray-600">
+//         <span>
 //           Page {page} of {totalPages}
 //         </span>
 
 //         <button
-//           disabled={page === totalPages}
-//           onClick={() => setPage((p) => p + 1)}
-//           className="px-4 py-2 border rounded disabled:opacity-50"
+//           disabled={page === totalPages || totalPages === 0}
+//           onClick={() => setPage(page + 1)}
+//           className="px-3 py-1 border rounded disabled:opacity-50"
 //         >
 //           Next
 //         </button>
@@ -122,6 +112,8 @@
 // };
 
 // export default SubscriberList;
+
+
 
 import { useEffect, useState } from "react";
 import api from "../api/axios";
@@ -142,8 +134,8 @@ const SubscriberList = () => {
         params: {
           page,
           limit: PAGE_LIMIT,
-          search
-        }
+          search,
+        },
       });
 
       setSubscribers(response.data.data);
@@ -163,79 +155,108 @@ const SubscriberList = () => {
 
   return (
     <div className="space-y-6">
-      <h1 className="text-2xl font-semibold">Subscribers</h1>
+      {/* HEADER */}
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+        <div>
+          <h1 className="text-2xl font-semibold text-gray-900">
+            Subscribers
+          </h1>
+          <p className="text-sm text-gray-500">
+            Manage and search your subscribers
+          </p>
+        </div>
 
-      {/* Search */}
-      <input
-        type="text"
-        placeholder="Search by email..."
-        value={search}
-        onChange={(e) => {
-          setPage(1);
-          setSearch(e.target.value);
-        }}
-        className="border p-2 rounded w-64"
-      />
+        {/* SEARCH */}
+        <input
+          type="text"
+          placeholder="Search by email"
+          value={search}
+          onChange={(e) => {
+            setPage(1);
+            setSearch(e.target.value);
+          }}
+          className="w-full sm:w-64 rounded-lg border border-gray-300 px-4 py-2 text-sm
+                     focus:border-black-600 focus:ring-2 focus:ring-black-100 outline-none"
+        />
+      </div>
 
-      {/* Table */}
-      {loading ? (
-        <p>Loading subscribers...</p>
-      ) : (
-        <div className="bg-white shadow rounded">
+      {/* TABLE */}
+      <div className="overflow-hidden rounded-xl border border-gray-200 bg-white">
+        {loading ? (
+          <p className="p-6 text-sm text-gray-500">
+            Loading subscribers…
+          </p>
+        ) : (
           <table className="w-full border-collapse">
-            <thead className="bg-gray-100">
+            <thead className="bg-gray-200">
               <tr>
-                <th className="p-3 text-left">Name</th>
-                <th className="p-3 text-left">Email</th>
+                <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wide text-gray-900">
+                  Name
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wide text-gray-900">
+                  Email
+                </th>
               </tr>
             </thead>
 
-            <tbody>
+            <tbody className="divide-y divide-gray-200">
               {subscribers.length === 0 ? (
                 <tr>
-                  <td colSpan="2" className="p-4 text-center text-gray-500">
+                  <td
+                    colSpan="2"
+                    className="px-6 py-8 text-center text-sm text-gray-500"
+                  >
                     No subscribers found
                   </td>
                 </tr>
               ) : (
                 subscribers.map((subscriber) => (
-                  <tr key={subscriber.id} className="border-t">
-                    <td className="p-3">{subscriber.name}</td>
-                    <td className="p-3">{subscriber.email}</td>
+                  <tr
+                    key={subscriber.id}
+                    className="hover:bg-gray-50 transition"
+                  >
+                    <td className="px-6 py-4 text-sm text-gray-900">
+                      {subscriber.name || "—"}
+                    </td>
+                    <td className="px-6 py-4 text-sm text-gray-600">
+                      {subscriber.email}
+                    </td>
                   </tr>
                 ))
               )}
             </tbody>
           </table>
+        )}
+      </div>
+
+      {/* PAGINATION */}
+      <div className="flex items-center justify-between">
+        <p className="text-sm text-gray-500">
+          Page {page} of {totalPages || 1}
+        </p>
+
+        <div className="flex gap-2">
+          <button
+            disabled={page === 1}
+            onClick={() => setPage(page - 1)}
+            className="rounded-lg border border-gray-300 px-3 py-1.5 text-sm
+                       hover:bg-gray-50 disabled:opacity-50"
+          >
+            Previous
+          </button>
+
+          <button
+            disabled={page === totalPages || totalPages === 0}
+            onClick={() => setPage(page + 1)}
+            className="rounded-lg border border-gray-300 px-3 py-1.5 text-sm
+                       hover:bg-gray-50 disabled:opacity-50"
+          >
+            Next
+          </button>
         </div>
-      )}
-
-      {/* Pagination */}
-      <div className="flex items-center gap-4">
-        <button
-          disabled={page === 1}
-          onClick={() => setPage(page - 1)}
-          className="px-3 py-1 border rounded disabled:opacity-50"
-        >
-          Previous
-        </button>
-
-        <span>
-          Page {page} of {totalPages}
-        </span>
-
-        <button
-          disabled={page === totalPages || totalPages === 0}
-          onClick={() => setPage(page + 1)}
-          className="px-3 py-1 border rounded disabled:opacity-50"
-        >
-          Next
-        </button>
       </div>
     </div>
   );
 };
 
 export default SubscriberList;
-
-
